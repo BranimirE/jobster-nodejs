@@ -8,6 +8,9 @@ info:
     email: brani.espinoza@gmail.com
   version: '1.0'
 servers:
+- url: https://jobs-api-ouw7.onrender.com/api-docs/
+  description: Production
+  variables: {}
 - url: http://localhost:3000/api/v1
   description: Local testing
   variables: {}
