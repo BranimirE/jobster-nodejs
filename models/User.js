@@ -34,7 +34,7 @@ const UserSchema = new mongoose.Schema({
     trim: true,
     maxlength: 20,
     default: 'my city',
-  },
+  }
 })
 
 UserSchema.pre('save', async function () {
