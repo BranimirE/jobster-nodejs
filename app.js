@@ -43,7 +43,7 @@ const port = process.env.PORT || 3000
 
 const start = async () => {
   try {
-    await connectDB(process.env.MONGO_URI)
+    await connectDB(process.env.JEST_WORKER_ID !== undefined?process.env.MONGO_URI_TEST:process.env.MONGO_URI)
     app.listen(port, () =>
       console.log(`Server is listening on port ${port}...`)
     )
