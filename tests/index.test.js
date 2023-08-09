@@ -1,20 +1,17 @@
-const request = require('supertest')
-const app = require('../app')
+// const { beforeAll, afterAll, describe, it } = require('jest')
+// const request = require('supertest')
+// const app = require('../app')
 const connectDB = require('../db/connect')
 const mongoose = require('mongoose')
 
 beforeAll(async () => {
-  await connectDB(process.env.MONGO_URI);
-  console.log("DB connected")
-}, 20 * 1000) // 20 secs timeout
+  await connectDB(process.env.MONGO_URI)
+})
 
 afterAll(async () => {
-  await mongoose.connection.close();
-  await new Promise(resolve => setTimeout(() => resolve(), 10000));
-}, 15 * 1000) // 15 secs timeout
+  await mongoose.connection.close()
+})
 
 describe('Users API', () => {
-  it('should create a new user', () => {
-
-  })
-}) 
+  it('should create a new user', () => {})
+})
