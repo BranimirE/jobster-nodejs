@@ -19,7 +19,6 @@ const getMongoUri = () => {
       MONGODB_PASSWORD,
     )
   }
-  console.log({mongoURI})
   return mongoURI
 }
 
