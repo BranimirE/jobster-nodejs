@@ -1,6 +1,18 @@
 version: '3.1'
 
 services:
+  jobster:
+    build: .
+    restart: always
+    ports:
+      - 3000:3000
+    environment:
+      - MONGODB_HOST=mongodb
+      - MONGODB_DATABASE=${MONGODB_DATABASE}
+      - MONGODB_USERNAME=${MONGODB_USERNAME}
+      - MONGODB_PASSWORD=${MONGODB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_LIFETIME=${JWT_LIFETIME}
 
   mongodb:
     image: bitnami/mongodb:6.0
