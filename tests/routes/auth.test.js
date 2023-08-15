@@ -63,4 +63,8 @@ describe('Auth routes', () => {
 
     await User.findOneAndRemove({ email: user.email })
   })
+
+  it('PATCH /api/v1/auth/updateUser', () => {
+
+  })
 })

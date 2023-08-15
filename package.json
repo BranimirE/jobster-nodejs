@@ -1,12 +1,13 @@
 {
-  "name": "06-jobs-api",
+  "name": "jobster",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "jest --detectOpenHandles"
+    "test": "jest --verbose --detectOpenHandles",
+    "test-dev": "jest --verbose --detectOpenHandles --watchAll"
   },
   "author": "",
   "license": "ISC",
