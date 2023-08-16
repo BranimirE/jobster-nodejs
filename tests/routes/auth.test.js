@@ -12,7 +12,7 @@ afterAll(async () => {
   await mongoose.connection.close()
 })
 
-describe('Auth routes', () => {
+describe('Auth API', () => {
 
   it('POST /api/v1/auth/register', async () => {
     const data = {
