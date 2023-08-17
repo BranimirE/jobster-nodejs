@@ -6,6 +6,7 @@ const request = require('supertest');
 const Job = require("../../src/models/Job");
 
 let token;
+let testingUser;
 const userTestData = {
   name: 'TestUser',
   email: 'test.jobs.routes@testemail.com',
@@ -15,16 +16,42 @@ beforeAll(async () => {
   await connectDB(getMongoUri())
   //Creating a testing user
   await User.findOneAndRemove({email: userTestData.email})
-  const user = await User.create(userTestData)
-  token = user.createJWT()
+  testingUser = await User.create(userTestData)
+  token = testingUser.createJWT()
 })
 afterAll(async () => {
   // Remove the testing user
-  await User.findOneAndRemove({email: userTestData.email})
+  await testingUser.delete()
   await moongose.connection.close()
 })
 
 describe('Jobs API', () => {
+  it('GET /api/v1/jobs', async () => {
+    const job = await Job.create({
+      company : "Meta",
+      jobLocation : "San Francisco",
+      jobType : "full-time",
+      position : "Backend Developer",
+      status : "interview",
+      createdBy: testingUser._id
+    })
+    const response = await request(app).get('/api/v1/jobs').set('Authorization', `Bearer ${token}`).send()
+    expect(response.status).toBe(200)
+    expect(Array.isArray(response.body.jobs)).toBeTruthy()
+
+    // The recently created job was returned in the response
+    const testJob = response.body.jobs.find(jobItem => jobItem._id == job._id)
+    expect(testJob).toBeTruthy()
+    expect(testJob.company).toBe(job.company)
+    expect(testJob.jobLocation).toBe(job.jobLocation)
+    expect(testJob.jobType).toBe(job.jobType)
+    expect(testJob.position).toBe(job.position)
+    expect(testJob.status).toBe(job.status)
+
+    // All the returned jobs belongs to the testingUser user
+    expect(response.body.jobs.every(jobItem => jobItem.createdBy == testingUser._id)).toBeTruthy()
+  })
+
   it('POST /api/v1/jobs', async () => {
     const job_data = {
       company : "Meta",
