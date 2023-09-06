@@ -5,7 +5,7 @@ const { connectDB, getMongoUri } = require('../../src/db/connect')
 const mongoose = require('mongoose')
 
 beforeAll(async () => {
-  await connectDB(getMongoUri())
+  await connectDB(await getMongoUri())
 })
 
 afterAll(async () => {

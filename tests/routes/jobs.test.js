@@ -13,7 +13,7 @@ const userTestData = {
   password: 'secret',
 }
 beforeAll(async () => {
-  await connectDB(getMongoUri())
+  await connectDB(await getMongoUri())
   //Creating a testing user
   await User.findOneAndRemove({email: userTestData.email})
   testingUser = await User.create(userTestData)

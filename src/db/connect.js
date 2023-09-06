@@ -1,9 +1,19 @@
 const mongoose = require('mongoose')
+const { MongoMemoryServer } = require('mongodb-memory-server')
 
 const makeMongoURI = (host, dbName, username, password) =>
   `mongodb://${username}:${password}@${host}:27017/${dbName}?authMechanism=DEFAULT`
 
-const getMongoUri = () => {
+let mongoServer;
+
+const getMongoUri = async () => {
+  if (process.env.NODE_ENV === 'test') {
+    if (!mongoServer) {
+      mongoServer = await MongoMemoryServer.create()
+    }
+    return mongoServer.getUri()
+  }
+
   let mongoURI = process.env.MONGO_URI
   if (!mongoURI) {
     const {
@@ -22,12 +32,15 @@ const getMongoUri = () => {
   return mongoURI
 }
 
-const connectDB = async (url) => {
-  await mongoose.connect(url, {
+const connectDB = async (uri) => {
+  await mongoose.connect(uri, {
     useNewUrlParser: true,
     useCreateIndex: true,
     useFindAndModify: false,
     useUnifiedTopology: true,
+  })
+  mongoose.connection.once('open', () => {
+    console.log(`MongoDB successfully connected to ${uri}`)
   })
 }
 

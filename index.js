@@ -6,7 +6,7 @@ const port = process.env.PORT || 3000
 
 const start = async () => {
   try {
-    await connectDB(getMongoUri())
+    await connectDB(await getMongoUri())
     await populateGuestUser()
     app.listen(port, () =>
       console.log(`Server is listening on port ${port}...`),
