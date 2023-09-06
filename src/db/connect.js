@@ -44,7 +44,16 @@ const connectDB = async (uri) => {
   })
 }
 
+const closeDB = async () => {
+  await mongoose.disconnect()
+
+  if (mongoServer) {
+    await mongoServer.stop()
+  }
+}
+
 module.exports = {
   connectDB,
   getMongoUri,
+  closeDB
 }

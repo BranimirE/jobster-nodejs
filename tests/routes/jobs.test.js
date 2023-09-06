@@ -1,4 +1,4 @@
-const { connectDB, getMongoUri } = require("../../src/db/connect")
+const { connectDB, getMongoUri, closeDB } = require("../../src/db/connect")
 const moongose = require('mongoose');
 const User = require("../../src/models/User");
 const app = require("../../src/app");
@@ -7,11 +7,13 @@ const Job = require("../../src/models/Job");
 
 let token;
 let testingUser;
+
 const userTestData = {
   name: 'TestUser',
   email: 'test.jobs.routes@testemail.com',
   password: 'secret',
 }
+
 beforeAll(async () => {
   await connectDB(await getMongoUri())
   //Creating a testing user
@@ -19,10 +21,9 @@ beforeAll(async () => {
   testingUser = await User.create(userTestData)
   token = testingUser.createJWT()
 })
+
 afterAll(async () => {
-  // Remove the testing user
-  await testingUser.delete()
-  await moongose.connection.close()
+  await closeDB()
 })
 
 describe('Jobs API', () => {

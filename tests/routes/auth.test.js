@@ -1,26 +1,23 @@
 const User = require('../../src/models/User')
 const app = require('../../src/app')
 const request = require('supertest')
-const { connectDB, getMongoUri } = require('../../src/db/connect')
-const mongoose = require('mongoose')
+const { connectDB, getMongoUri, closeDB } = require('../../src/db/connect')
+const { Builder } = require('../builders/Builder')
 
 beforeAll(async () => {
   await connectDB(await getMongoUri())
 })
 
 afterAll(async () => {
-  await mongoose.connection.close()
+  await closeDB()
 })
 
 describe('Auth API', () => {
 
   it('POST /api/v1/auth/register', async () => {
-    const data = {
-      name: 'TestUserName',
-      email: 'testuser@testemail.com',
-      password: 'secret',
-    }
-    // Remove the user if it already exists
+    const data = Builder.user()
+
+    // Ensure that the user does not exist
     await User.findOneAndRemove({ email: data.email })
 
     const response = await request(app).post('/api/v1/auth/register').send(data)
@@ -41,21 +38,15 @@ describe('Auth API', () => {
   })
 
   it('POST /api/v1/auth/login', async () => {
-    const user = {
-      name: 'TestUserName',
-      email: 'testuser@testemail.com',
-      password: 'secret',
-    }
+    const user = Builder.user()
     // Remove the user if it already exists
     await User.findOneAndRemove({ email: user.email })
     await User.create(user)
 
-    const data = {
+    const response = await request(app).post('/api/v1/auth/login').send({
       email: user.email,
       password: user.password
-    }
-
-    const response = await request(app).post('/api/v1/auth/login').send(data)
+    })
     expect(response.status).toBe(200)
     expect(response.body.user.name).toBe(user.name)
     expect(response.body.user.email).toBe(user.email)
@@ -65,11 +56,7 @@ describe('Auth API', () => {
   })
 
   it('PATCH /api/v1/auth/updateUser', async () => {
-    const userData = {
-      name: 'TestUserName',
-      email: 'testuser@testemail.com',
-      password: 'secret',
-    }
+    const userData = Builder.user()
     const updateData = {
       name: 'TestUserNameUpdated',
       email: 'testuserupdate@testemail.com',
@@ -87,20 +74,15 @@ describe('Auth API', () => {
 
     // It should respond the updated data
     expect(response.status).toBe(200)
-    expect(response.body.user.name).toBe(updateData.name)
-    expect(response.body.user.email).toBe(updateData.email)
-    expect(response.body.user.lastName).toBe(updateData.lastName)
-    expect(response.body.user.location).toBe(updateData.location)
+
+    expect(response.body.user).toMatchObject(updateData)
     expect(response.body.user.token).toBeTruthy()
 
     // Check database data
     user = await User.findOne({_id: user._id})
-    expect(user.name).toBe(updateData.name)
-    expect(user.email).toBe(updateData.email)
-    expect(user.lastName).toBe(updateData.lastName)
-    expect(user.location).toBe(updateData.location)
+    expect(user).toMatchObject(updateData)
 
-    // Remove the upadted user
+    // Remove the updated user
     await user.delete()
   })
 })
