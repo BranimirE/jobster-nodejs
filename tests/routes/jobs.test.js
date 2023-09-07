@@ -55,6 +55,7 @@ describe('Jobs API', () => {
       .post('/api/v1/jobs')
       .set('Authorization', `Bearer ${token}`)
       .send(jobData)
+
     // Check the response
     expect(response.status).toBe(201)
     expect(response.body.job).toMatchObject(jobData)
@@ -62,5 +63,20 @@ describe('Jobs API', () => {
     // Check the data in the database
     const job = await Job.findOne({_id: response.body.job._id})
     expect(job).toMatchObject(jobData)
+  })
+
+  it('GET /api/v1/jobs/:id', async () => {
+    const jobData = Builder.job()
+    const job = await Job.create({createdBy: testingUser._id, ...jobData})
+
+    const response = await request(app)
+      .get(`/api/v1/jobs/${job._id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send()
+
+    // Check the response
+    expect(response.status).toBe(200)
+    expect(response.body.job).toMatchObject(jobData)
+    expect(response.body.job.createdBy).toBe(testingUser._id.toString())
   })
 })
