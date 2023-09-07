@@ -3,5 +3,12 @@ module.exports.Builder = {
       name,
       email,
       password,
+  }),
+  job: ({ company = "Meta", jobLocation = "San Francisco", jobType = "full-time", position = "Backend Developer", status = "interview", } = {}) => ({
+      company ,
+      jobLocation ,
+      jobType ,
+      position ,
+      status ,
   })
 }
