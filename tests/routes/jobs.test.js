@@ -79,4 +79,47 @@ describe('Jobs API', () => {
     expect(response.body.job).toMatchObject(jobData)
     expect(response.body.job.createdBy).toBe(testingUser._id.toString())
   })
+
+  it('DELETE /api/v1/jobs/:id', async () => {
+    const jobData = Builder.job()
+    const job = await Job.create({createdBy: testingUser._id, ...jobData})
+
+    const response = await request(app)
+      .delete(`/api/v1/jobs/${job._id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send()
+
+    expect(response.status).toBe(200)
+    const deletedJob = await Job.findOne({_id: job._id})
+    expect(deletedJob).toBeNull()
+  })
+
+  it('PATCH /api/v1/jobs/:id', async () => {
+    const jobData = Builder.job()
+    const updateData = {
+        company: 'Google',
+        position: 'FullStack Developer',
+        status: 'pending',
+      }
+    const job = await Job.create({createdBy: testingUser._id, ...jobData})
+    const response = await request(app)
+      .patch(`/api/v1/jobs/${job._id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send(updateData)
+    expect(response.status).toBe(200)
+    expect(response.body.job).toMatchObject(updateData)
+
+    const updatedJob = await Job.findOne({_id: job._id})
+    expect(updatedJob).toMatchObject(updateData)
+  })
+
+  it('GET /api/v1/jobs/stats', async () => {
+    const response = await request(app)
+      .get('/api/v1/jobs/stats')
+      .set('Authorization', `Bearer ${token}`)
+      .send()
+    expect(response.status).toBe(200)
+    expect(response.body).toBeInstanceOf(Object)
+  })
+
 })
