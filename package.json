@@ -37,9 +37,5 @@
   },
   "engines": {
     "node": "18.x"
-  },
-  "prettier": {
-    "semi": false,
-    "singleQuote": true
   }
 }
